@@ -1,136 +1,55 @@
 package search
 
 import (
-	"reflect"
-	"regexp"
+	"strconv"
 
-	"github.com/logingood/gooz/internal/backend"
-	"github.com/logingood/gooz/internal/config"
-	"github.com/logingood/gooz/internal/schema"
+	"github.com/logingood/gooz/internal/index"
 	log "github.com/sirupsen/logrus"
 )
 
-type Search struct {
-	Users         []*schema.User
-	Organizations []*schema.Organization
-	Tickets       []*schema.Ticket
-	store         backend.Store
-}
+func BuildIndex(key string, data []map[string]interface{}) (idx *index.HashTable, err error) {
+	idx = index.New()
 
-func New(config *config.Config, store backend.Store) (searcher *Search, err error) {
-	searcher = &Search{
-		store: store,
-	}
-
-	searcher.Tickets, err = store.ReadTickets()
-	if err != nil {
-		log.Errorf("Error has occurred while read users %s", err)
-	}
-
-	searcher.Organizations, err = store.ReadOrganizations()
-	if err != nil {
-		log.Errorf("Error has occurred while read users %s", err)
-	}
-
-	searcher.Users, err = store.ReadUsers()
-	if err != nil {
-		log.Errorf("Error has occurred while read users %s", err)
-	}
-
-	return searcher, nil
-}
-
-func (s *Search) SearchOrgsByString(property string, pattern string) (results *Search, err error) {
-
-	results = &Search{
-		Organizations: make([]*schema.Organization, 0),
-		Users:         make([]*schema.User, 0),
-		Tickets:       make([]*schema.Ticket, 0),
-	}
-
-	for _, element := range s.Organizations {
-
-		orgsReflection := reflect.Indirect(reflect.ValueOf(element))
-		field := orgsReflection.FieldByName(property)
-
-		match, err := regexp.MatchString(pattern, field.String())
-
-		if err != nil {
-			log.Errorf("Can't perform match, malformed patter %s", err)
-			return results, err
+	for _, element := range data {
+		if element[key] == nil {
+			element[key] = "notset"
 		}
 
-		if match {
-			results.Organizations = append(results.Organizations, element)
-			usersFound := results.SearchUsersByOrgId(element.Id)
-			ticketsFound := results.SearchTicketsByOrgId(element.Id)
-			results.Users = append(results.Users, usersFound...)
-			results.Tickets = append(results.Tickets, ticketsFound...)
+		switch element[key].(type) {
+		case []interface{}:
+			interfaceSlice := element[key].([]interface{})
+			// insert multiple keys for tags and etc
+			for _, v := range interfaceSlice {
+				idx.Insert(v.(string), element)
+			}
+		case float64:
+			err = idx.Insert(strconv.FormatFloat(element[key].(float64), 'f', 0, 64), element)
+		case bool:
+			err = idx.Insert(strconv.FormatBool(element[key].(bool)), element)
+		default:
+			err = idx.Insert(element[key], element)
+			if err != nil {
+				log.Errorf("Error has occured when indexing data %s", err)
+			}
 		}
 	}
 
-	return results, err
+	return idx, err
 }
 
-func (s *Search) SearchOrgsById(id int64) (results *schema.Organization) {
-	for _, element := range s.Organizations {
-		if element.Id == id {
-			return element
-		}
+func SearchData(key string, h *index.HashTable) (results []map[string]interface{}) {
+	values := h.Search(key)
+	results = make([]map[string]interface{}, 0)
+
+	if len(values) < 0 {
+		log.Errorf("Search didn't return results")
+		return results
 	}
 
-	return nil
-}
-
-func (s *Search) SearchUsersById(id int64) (results *schema.User) {
-	for _, element := range s.Users {
-		if element.Id == id {
-			return element
-		}
-	}
-
-	return nil
-}
-
-func (s *Search) SearchUsersByOrgId(id int64) (results []*schema.User) {
-	results = make([]*schema.User, 0)
-	for _, element := range s.Users {
-		if element.Id == id {
-			results = append(results, element)
-		}
+	for _, val := range values {
+		result := val.(map[string]interface{})
+		results = append(results, result)
 	}
 
 	return results
-}
-
-func (s *Search) SearchTicketsByOrgId(id int64) (results []*schema.Ticket) {
-	results = make([]*schema.Ticket, 0)
-
-	for _, element := range s.Tickets {
-		if element.OrganizationId == id {
-			results = append(results, element)
-		}
-	}
-
-	return results
-}
-
-func (s *Search) SearchTicketsByAssigneId(id int64) (results []*schema.Ticket) {
-	for _, element := range s.Organizations {
-		if element.Id == id {
-			return results
-		}
-	}
-
-	return nil
-}
-
-func (s *Search) SearchTicketsByRequesterId(id int64) (results []*schema.Ticket) {
-	for _, element := range s.Organizations {
-		if element.Id == id {
-			return results
-		}
-	}
-
-	return nil
 }

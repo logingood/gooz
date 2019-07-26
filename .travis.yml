@@ -1,0 +1,20 @@
+dist: xenial
+sudo: false
+language: go
+branches:
+  only: master
+notifications:
+go:
+  - "1.12"
+install:
+  - go get -u github.com/golang/dep/cmd/dep
+  - go get github.com/onsi/ginkgo/ginkgo
+  - go get github.com/onsi/gomega/...
+jobs:
+  include:
+  - name: Dependency check
+    script: dep check -skip-vendor
+  - name: Coverage
+    script: make coverage
+  - name: Ginkgo
+    script: make test
