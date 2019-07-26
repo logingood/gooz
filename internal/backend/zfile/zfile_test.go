@@ -4,6 +4,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
+	"github.com/google/uuid"
 	. "github.com/logingood/gooz/internal/backend/zfile"
 	"github.com/logingood/gooz/internal/config"
 	"github.com/spf13/afero"
@@ -153,7 +154,7 @@ var _ = Describe("Zfile", func() {
 				Expect(err_tickets).To(HaveOccurred())
 				Expect(err_orgs).To(MatchError("invalid character 'ð' looking for beginning of value"))
 				Expect(err_users).To(MatchError("json: cannot unmarshal string into Go struct field User._id of type int64"))
-				Expect(err_tickets).To(MatchError("json: cannot unmarshal number into Go struct field Ticket._id of type string"))
+				Expect(err_tickets).To(MatchError("json: cannot unmarshal number into Go struct field Ticket._id of type uuid.UUID"))
 			})
 
 			It("Should bind users, tickets and organizations to json", func() {
@@ -304,6 +305,9 @@ var _ = Describe("Zfile", func() {
 				users, err_users := store.ReadUsers()
 				tickets, err_tickets := store.ReadTickets()
 
+				uuid1, _ := uuid.Parse("123fc8bc-31de-411e-92bf-a6d6b9dfa490")
+				uuid2, _ := uuid.Parse("456fc8bc-31de-411e-92bf-a6d6b9dfa490")
+
 				Expect(err_orgs).ToNot(HaveOccurred())
 				Expect(err_users).ToNot(HaveOccurred())
 				Expect(err_tickets).ToNot(HaveOccurred())
@@ -311,8 +315,10 @@ var _ = Describe("Zfile", func() {
 				Expect(orgs[1].Id).To(Equal(int64(222)))
 				Expect(users[0].Id).To(Equal(int64(1)))
 				Expect(users[1].Id).To(Equal(int64(2)))
-				Expect(tickets[0].Id).To(Equal("123fc8bc-31de-411e-92bf-a6d6b9dfa490"))
-				Expect(tickets[1].Id).To(Equal("456fc8bc-31de-411e-92bf-a6d6b9dfa490"))
+				Expect(tickets[0].Id).To(Equal(uuid1))
+				Expect(tickets[1].Id).To(Equal(uuid2))
+				Expect(tickets[0].DueAt.Unix()).To(Equal(int64(1470251857)))
+				Expect(tickets[0].CreatedAt.Unix()).To(Equal(int64(1457469894)))
 			})
 		})
 	})
