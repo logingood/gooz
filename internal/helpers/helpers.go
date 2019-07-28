@@ -17,6 +17,8 @@ func DetectTypeAndStringfy(val interface{}) (strConverted string, err error) {
 	case float64:
 		return strconv.FormatFloat(val.(float64), 'f', 0, 64), nil
 	case int:
+		return strconv.FormatInt(int64(val.(int)), 10), nil
+	case int64:
 		return strconv.FormatInt(val.(int64), 10), nil
 	case bool:
 		return strconv.FormatBool(val.(bool)), nil
