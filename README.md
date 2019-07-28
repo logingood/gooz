@@ -20,24 +20,25 @@ To build cli we have used [spf13 cobra](https://github.com/spf13/cobra)
 - [ ] Performance analysis TBD
 - [x] Errors are handled and logged, corresponding tests provided
 
+# Install and build
 
-# Dockerfile
+You can use `go get` command:
 
-The easiest way to build and run the code is a dockek
+```
+go get -u github.com/logingood/gooz
+```
 
+Alternatively use [Docker](https://github.com/logingood/gooz#dockerfile) or build yourself:
 ```
 git clone https://github.com/logingood/gooz
 cd gooz
-
-docker build . -t gooz
+go run . --help
 ```
 
-Run the container
-```
-docker rm -f gooz >/dev/null 2>&1;  docker run -ti --name gooz gooz:latest /bin/gooz --help
-```
+# CLI and Configuration
 
-# CLI
+By default `gooz` will look for tables in `./data/tickets.json`, `./data/users.json` and `./data/organizations.json`.
+To alter this you can use `--organizations_path`, `--tickets_path` and `--users_path` flags and supply to cli.
 
 Search tickets by any field, e.g. subject
 
@@ -54,6 +55,46 @@ gooz organizations created_at  "2016-05-21T11:10:28 -10:00"
 Search users by any field
 ```
 gooz users alias "Miss Rosanna"`
+```
+
+Check all availabel options and configuration keys with
+
+```
+gooz help
+```
+
+```
+Usage:
+  gooz [command]
+
+Available Commands:
+  help          Help about any command
+  organizations Search organizations table
+  tickets       Tickets search
+  users         search users table
+
+Flags:
+      --config string               config file (default is $HOME/.gooz.yaml)
+  -h, --help                        help for gooz
+      --organizations_path string   path to your organizations.json, default is data/organizations.json (default "data/organizations.json")
+      --tickets_path string         path to your tickets.json, default is data/tickets.json (default "data/tickets.json")
+      --users_path string           path to your users.json, default is data/users.json (default "data/users.json")
+```
+
+# Dockerfile
+
+One of the easiest ways to build and run the code is a docker command
+
+```
+git clone https://github.com/logingood/gooz
+cd gooz
+
+docker build . -t gooz
+```
+
+Run the container
+```
+docker rm -f gooz >/dev/null 2>&1;  docker run -ti --name gooz gooz:latest /bin/gooz --help
 ```
 
 

@@ -40,19 +40,25 @@ var ticketsCmd = &cobra.Command{
 		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		results := searchField("data/tickets.json", args[0], args[1])
+		results := searchField(ticketsFilePath, args[0], args[1])
 
 		drawTable(results)
 
 		for _, element := range results {
-			orgs := searchField("data/organizations.json", "_id", strconv.FormatFloat(element["organization_id"].(float64), 'f', 0, 64))
-			drawTable(orgs)
+			if element["organization_id"] != nil {
+				orgs := searchField(organizationsFilePath, "_id", strconv.FormatFloat(element["organization_id"].(float64), 'f', 0, 64))
+				drawTable(orgs)
+			}
 
-			users := searchField("data/users.json", "_id", strconv.FormatFloat(element["assignee_id"].(float64), 'f', 0, 64))
-			drawTable(users)
+			if element["assignee_id"] != nil {
+				users := searchField(usersFilePath, "_id", strconv.FormatFloat(element["assignee_id"].(float64), 'f', 0, 64))
+				drawTable(users)
+			}
 
-			users = searchField("data/users.json", "_id", strconv.FormatFloat(element["submitter_id"].(float64), 'f', 0, 64))
-			drawTable(users)
+			if element["submitter_id"] != nil {
+				users := searchField(usersFilePath, "_id", strconv.FormatFloat(element["submitter_id"].(float64), 'f', 0, 64))
+				drawTable(users)
+			}
 		}
 	},
 }

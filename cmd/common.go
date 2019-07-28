@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"fmt"
-	"os"
+	//	"os"
 
 	"github.com/logingood/gooz/internal/backend/zfile"
 	"github.com/logingood/gooz/internal/search"
@@ -28,8 +28,8 @@ func searchField(filePath string, field string, pattern string) (results []map[s
 	results = search.SearchData(pattern, idx)
 
 	if len(results) < 1 {
-		fmt.Println("Search didn't return results, try another word")
-		os.Exit(0)
+		fmt.Printf("Search of %s => %s didn't return results, try another word\n", field, pattern)
+		return nil
 	}
 
 	return results
@@ -37,12 +37,11 @@ func searchField(filePath string, field string, pattern string) (results []map[s
 
 func drawTable(results []map[string]interface{}) {
 	err := table.DrawTable(results)
-	errExit(err, "Failed to draw a table - %s\n")
+	errExit(err, "Failed to draw a table")
 }
 
 func errExit(err error, message string) {
 	if err != nil {
 		fmt.Printf("%s - %s\n", message, err)
-		os.Exit(1)
 	}
 }

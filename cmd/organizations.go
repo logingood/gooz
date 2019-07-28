@@ -40,16 +40,18 @@ var organizationsCmd = &cobra.Command{
 		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		results := searchField("data/organizations.json", args[0], args[1])
+		results := searchField(organizationsFilePath, args[0], args[1])
 
 		drawTable(results)
 
 		for _, element := range results {
-			users := searchField("data/users.json", "organization_id", strconv.FormatFloat(element["_id"].(float64), 'f', 0, 64))
-			drawTable(users)
+			if element["_id"] != nil {
+				users := searchField(usersFilePath, "organization_id", strconv.FormatFloat(element["_id"].(float64), 'f', 0, 64))
+				drawTable(users)
 
-			tickets := searchField("data/tickets.json", "organization_id", strconv.FormatFloat(element["_id"].(float64), 'f', 0, 64))
-			drawTable(tickets)
+				tickets := searchField(ticketsFilePath, "organization_id", strconv.FormatFloat(element["_id"].(float64), 'f', 0, 64))
+				drawTable(tickets)
+			}
 		}
 	},
 }
