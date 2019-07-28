@@ -57,6 +57,13 @@ Search users by any field
 gooz users alias "Miss Rosanna"`
 ```
 
+Search by empty field, to be explicit I decided to use `noset` keyword. Whenver you want to search `null` field,
+missing key in the map or anything like that put "notset", e.g.
+
+```
+gooz tickets assignee_id notset
+```
+
 Check all availabel options and configuration keys with
 
 ```
