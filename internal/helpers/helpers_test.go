@@ -94,4 +94,47 @@ var _ = Describe("Helpers", func() {
 			})
 		})
 	})
+	Describe("Find the longest map and return keys slice", func() {
+		Context("Working with maps", func() {
+			It("should detect longest from maps and return rows and header", func() {
+				inputData := make([]map[string]interface{}, 4)
+				map1 := make(map[string]interface{}, 0)
+				map1["k1"] = "v11"
+				map1["k2"] = "v12"
+				map1["k3"] = "v13"
+
+				map2 := make(map[string]interface{}, 0)
+				map2["k1"] = "v21"
+				map2["k2"] = "v22"
+
+				inputData[0] = map1
+				inputData[1] = map2
+
+				header, rows := FindTheLongestMapAndSliceKeys(inputData)
+				Expect(header).To(Equal([]string{"k1", "k2", "k3"}))
+				Expect(rows[0]).To(Equal([]string{"v11", "v12", "v13"}))
+				Expect(rows[1]).To(Equal([]string{"v21", "v22"}))
+			})
+			It("should detect longest from maps and return rows and header for 1 row map", func() {
+				inputData := make([]map[string]interface{}, 4)
+				map1 := make(map[string]interface{}, 0)
+				map1["k1"] = "v11"
+				map1["k2"] = "v12"
+				map1["k3"] = "v13"
+
+				inputData[0] = map1
+
+				header, rows := FindTheLongestMapAndSliceKeys(inputData)
+				Expect(header).To(Equal([]string{"k1", "k2", "k3"}))
+				Expect(rows[0]).To(Equal([]string{"v11", "v12", "v13"}))
+			})
+			It("should handle empty map", func() {
+				inputData := make([]map[string]interface{}, 4)
+
+				header, rows := FindTheLongestMapAndSliceKeys(inputData)
+				Expect(header).To(BeNil())
+				Expect(len(rows[0])).To(Equal(0))
+			})
+		})
+	})
 })

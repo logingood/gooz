@@ -39,7 +39,6 @@ func FindTheLongestMapAndSliceKeys(inputData []map[string]interface{}) (header [
 	var row []string
 
 	rows = make([][]string, 0)
-
 	for _, element := range inputData {
 
 		keys, row = sortMap(element)
@@ -50,7 +49,7 @@ func FindTheLongestMapAndSliceKeys(inputData []map[string]interface{}) (header [
 		}
 	}
 
-	return keys, rows
+	return longestKeys, rows
 }
 
 // Maps are unsorted in Go, we need to sort them
