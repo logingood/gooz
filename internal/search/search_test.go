@@ -275,7 +275,7 @@ var _ = Describe("Search", func() {
 				Expect(results[0]["name"]).To(Equal("John Pumpkin"))
 				Expect(err).ToNot(HaveOccurred())
 
-				results = SearchData("notset", h)
+				results = SearchData("", h)
 				Expect(len(results)).To(Equal(2))
 				Expect(results[0]["name"]).To(Equal("Jean Luc Picard"))
 				Expect(results[1]["name"]).To(Equal("Cobra Commander"))

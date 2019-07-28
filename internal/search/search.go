@@ -12,7 +12,7 @@ func BuildIndex(key string, data []map[string]interface{}) (idx *index.HashTable
 
 	for _, element := range data {
 		if element[key] == nil {
-			element[key] = "notset"
+			element[key] = ""
 		}
 
 		switch element[key].(type) {

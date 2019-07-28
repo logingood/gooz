@@ -41,7 +41,7 @@ func getRelatedElements(searchGroup string, mapToSearch []map[string]interface{}
 		case "organizations":
 			if element["_id"] != nil {
 				elementStr, err := helpers.DetectTypeAndStringfy(element["_id"])
-				if err != nil {
+				if err == nil {
 					users := searchField(usersFilePath, "organization_id", elementStr)
 					drawTable(users)
 
@@ -52,7 +52,7 @@ func getRelatedElements(searchGroup string, mapToSearch []map[string]interface{}
 		case "users":
 			if element["organization_id"] != nil {
 				elementStr, err := helpers.DetectTypeAndStringfy(element["organization_id"])
-				if err != nil {
+				if err == nil {
 					orgs := searchField(organizationsFilePath, "_id", elementStr)
 					drawTable(orgs)
 				}
@@ -60,7 +60,7 @@ func getRelatedElements(searchGroup string, mapToSearch []map[string]interface{}
 
 			if element["_id"] != nil {
 				elementStr, err := helpers.DetectTypeAndStringfy(element["_id"])
-				if err != nil {
+				if err == nil {
 					tickets := searchField(ticketsFilePath, "assignee_id", elementStr)
 					drawTable(tickets)
 					tickets = searchField(ticketsFilePath, "submitter_id", elementStr)
@@ -70,7 +70,7 @@ func getRelatedElements(searchGroup string, mapToSearch []map[string]interface{}
 		case "tickets":
 			if element["organization_id"] != nil {
 				elementStr, err := helpers.DetectTypeAndStringfy(element["organization_id"])
-				if err != nil {
+				if err == nil {
 					orgs := searchField(organizationsFilePath, "_id", elementStr)
 					drawTable(orgs)
 				}
@@ -78,7 +78,7 @@ func getRelatedElements(searchGroup string, mapToSearch []map[string]interface{}
 
 			if element["assignee_id"] != nil {
 				elementStr, err := helpers.DetectTypeAndStringfy(element["assignee_id"])
-				if err != nil {
+				if err == nil {
 					users := searchField(usersFilePath, "_id", elementStr)
 					drawTable(users)
 				}
@@ -86,7 +86,7 @@ func getRelatedElements(searchGroup string, mapToSearch []map[string]interface{}
 
 			if element["submitter_id"] != nil {
 				elementStr, err := helpers.DetectTypeAndStringfy(element["submitter_id"])
-				if err != nil {
+				if err == nil {
 					users := searchField(usersFilePath, "_id", elementStr)
 					drawTable(users)
 				}

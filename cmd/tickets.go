@@ -28,7 +28,9 @@ var ticketsCmd = &cobra.Command{
 		results := searchField(ticketsFilePath, args[0], args[1])
 
 		drawTable(results)
-		getRelatedElements("tickets", results)
+		if searchRelated {
+			getRelatedElements("tickets", results)
+		}
 	},
 }
 

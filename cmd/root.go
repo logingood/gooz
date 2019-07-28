@@ -20,6 +20,7 @@ var (
 	validStringsUsers     []string
 	validInputTickets     map[string]bool
 	validStringsTickets   []string
+	searchRelated         bool
 )
 
 // rootCmd represents the base command when called without any subcommands
@@ -46,6 +47,7 @@ func init() {
 	rootCmd.PersistentFlags().StringVar(&ticketsFilePath, "tickets_path", "data/tickets.json", "path to your tickets.json, default is data/tickets.json")
 	rootCmd.PersistentFlags().StringVar(&organizationsFilePath, "organizations_path", "data/organizations.json", "path to your organizations.json, default is data/organizations.json")
 	rootCmd.PersistentFlags().StringVar(&usersFilePath, "users_path", "data/users.json", "path to your users.json, default is data/users.json")
+	rootCmd.PersistentFlags().BoolVar(&searchRelated, "related", true, "Search for related items, true by default as per the task")
 }
 
 // initConfig reads in config file and ENV variables if set.

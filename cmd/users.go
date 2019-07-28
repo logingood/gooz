@@ -28,7 +28,9 @@ var usersCmd = &cobra.Command{
 		results := searchField(usersFilePath, args[0], args[1])
 
 		drawTable(results)
-		getRelatedElements("users", results)
+		if searchRelated {
+			getRelatedElements("users", results)
+		}
 	},
 }
 

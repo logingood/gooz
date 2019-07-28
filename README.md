@@ -46,6 +46,11 @@ Search tickets by any field, e.g. subject
 gooz tickets subject "A Problem in South Africa"
 ```
 
+For short output you can use flag `--related=false`, it is true by default and prints all related informationt to found items
+```
+gooz users suspended true --related=false
+```
+
 Search organization by any field, e.g.
 
 ```
@@ -57,11 +62,10 @@ Search users by any field
 gooz users alias "Miss Rosanna"`
 ```
 
-Search by empty field, to be explicit I decided to use `noset` keyword. Whenver you want to search `null` field,
-missing key in the map or anything like that put "notset", e.g.
+Search by empty field, just use ""
 
 ```
-gooz tickets assignee_id notset
+gooz tickets assignee_id ""
 ```
 
 Check all availabel options and configuration keys with
