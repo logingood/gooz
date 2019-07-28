@@ -15,7 +15,10 @@
 package cmd
 
 import (
+	"errors"
 	"fmt"
+	"strconv"
+	"strings"
 
 	"github.com/spf13/cobra"
 )
@@ -23,28 +26,44 @@ import (
 // usersCmd represents the users command
 var usersCmd = &cobra.Command{
 	Use:   "users",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
+	Short: "search users table",
+	Long:  `blah`,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 2 {
+			return errors.New("Please specify query field and search string")
+		}
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+		if validInputUsers[args[0]] == false {
+			return fmt.Errorf("Your input is invalid, we only support the following fields: %s\n", strings.Join(validStringsUsers, ", "))
+		}
+
+		return nil
+	},
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("users called")
+		results := searchField("data/users.json", args[0], args[1])
+
+		drawTable(results)
+
+		for _, element := range results {
+			orgs := searchField("data/organizations.json", "_id", strconv.FormatFloat(element["organization_id"].(float64), 'f', 0, 64))
+			drawTable(orgs)
+
+			tickets := searchField("data/tickets.json", "assignee_id", strconv.FormatFloat(element["_id"].(float64), 'f', 0, 64))
+			drawTable(tickets)
+
+			tickets = searchField("data/tickets.json", "submitter_id", strconv.FormatFloat(element["_id"].(float64), 'f', 0, 64))
+			drawTable(tickets)
+		}
 	},
 }
 
 func init() {
+	validInputUsers = make(map[string]bool)
+
+	validStringsUsers = []string{"_id", "url", "external_id", "name", "alias", "created_at", "active", "verified", "shared", "locale", "timezone", "last_login_at", "email", "phone", "signature", "organization_id", "tags", "suspended", "role"}
+	for _, v := range validStringsUsers {
+		validInput[v] = true
+	}
+
 	rootCmd.AddCommand(usersCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// usersCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// usersCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }

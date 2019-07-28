@@ -25,6 +25,15 @@ import (
 
 var cfgFile string
 
+var (
+	validInput          map[string]bool
+	validStrings        []string
+	validInputUsers     map[string]bool
+	validStringsUsers   []string
+	validInputTickets   map[string]bool
+	validStringsTickets []string
+)
+
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "gooz",

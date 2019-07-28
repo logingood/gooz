@@ -15,7 +15,10 @@
 package cmd
 
 import (
+	"errors"
 	"fmt"
+	"strconv"
+	"strings"
 
 	"github.com/spf13/cobra"
 )
@@ -23,28 +26,44 @@ import (
 // ticketsCmd represents the tickets command
 var ticketsCmd = &cobra.Command{
 	Use:   "tickets",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
+	Short: "Tickets search",
+	Long:  `Long desc goes here`,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 2 {
+			return errors.New("Please specify query field and search string")
+		}
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+		if validInputTickets[args[0]] == false {
+			return fmt.Errorf("Your input is invalid, we only support the following fields: %s\n", strings.Join(validStringsTickets, ", "))
+		}
+
+		return nil
+	},
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("tickets called")
+		results := searchField("data/tickets.json", args[0], args[1])
+
+		drawTable(results)
+
+		for _, element := range results {
+			orgs := searchField("data/organizations.json", "_id", strconv.FormatFloat(element["organization_id"].(float64), 'f', 0, 64))
+			drawTable(orgs)
+
+			users := searchField("data/users.json", "_id", strconv.FormatFloat(element["assignee_id"].(float64), 'f', 0, 64))
+			drawTable(users)
+
+			users = searchField("data/users.json", "_id", strconv.FormatFloat(element["submitter_id"].(float64), 'f', 0, 64))
+			drawTable(users)
+		}
 	},
 }
 
 func init() {
+	validInputTickets = make(map[string]bool)
+
+	validStringsTickets = []string{"_id", "url", "external_id", "created_at", "type", "subject", "description", "priority", "status", "submitter_id", "assignee_id", "organization_id", "tags", "has_incidents", "due_at", "via"}
+	for _, v := range validStringsTickets {
+		validInputTickets[v] = true
+	}
+
 	rootCmd.AddCommand(ticketsCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// ticketsCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// ticketsCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }

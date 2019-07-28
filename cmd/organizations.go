@@ -17,27 +17,17 @@ package cmd
 import (
 	"errors"
 	"fmt"
-	"os"
 	"strconv"
 	"strings"
 
-	"github.com/logingood/gooz/internal/table"
 	"github.com/spf13/cobra"
-)
-
-var (
-	validInput   map[string]bool
-	validStrings []string
 )
 
 // organizationsCmd represents the organizations command
 var organizationsCmd = &cobra.Command{
 	Use:   "organizations",
 	Short: "Search organizations table",
-	Long: `Allows to search organizations table using any field, including id,
-	date, tags, domains and boolean fields. Data is strictly type, error will be
-	thrown if incorrect data type is attempted to be passed as an argument to the
-	script`,
+	Long:  `Search by any field from given _id, url, external_id, name, domain_names, created_at, details, shared_tickets, tags`,
 	Args: func(cmd *cobra.Command, args []string) error {
 		if len(args) < 2 {
 			return errors.New("Please specify query field and search string")
@@ -50,30 +40,16 @@ var organizationsCmd = &cobra.Command{
 		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		results := Search("data/organizations.json", args[0], args[1])
+		results := searchField("data/organizations.json", args[0], args[1])
 
-		err := table.DrawTable(results)
-		if err != nil {
-			fmt.Printf("Failed to draw a table - %s\n", err)
-			os.Exit(1)
-		}
+		drawTable(results)
 
 		for _, element := range results {
-			users := Search("data/users.json", "organization_id", strconv.FormatFloat(element["_id"].(float64), 'f', 0, 64))
-			fmt.Println("WE FOUND USERS FOR THIS ID")
-			err := table.DrawTable(users)
-			if err != nil {
-				fmt.Printf("Failed to draw a table - %s\n", err)
-				os.Exit(1)
-			}
+			users := searchField("data/users.json", "organization_id", strconv.FormatFloat(element["_id"].(float64), 'f', 0, 64))
+			drawTable(users)
 
-			fmt.Println("WE FOUND TICKETS FOR THIS ID")
-			tickets := Search("data/tickets.json", "organization_id", strconv.FormatFloat(element["_id"].(float64), 'f', 0, 64))
-			err = table.DrawTable(tickets)
-			if err != nil {
-				fmt.Printf("Failed to draw a table - %s\n", err)
-				os.Exit(1)
-			}
+			tickets := searchField("data/tickets.json", "organization_id", strconv.FormatFloat(element["_id"].(float64), 'f', 0, 64))
+			drawTable(tickets)
 		}
 	},
 }
