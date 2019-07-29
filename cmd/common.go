@@ -15,15 +15,15 @@ func searchField(filePath string, field string, pattern string) (results []map[s
 	data := zfile.New(appFs, filePath)
 
 	err := data.Open()
-	errExit(err, "Error while opening file")
+	printErr(err, "Error while opening file")
 
 	dataMap, err := data.Read()
 	defer data.Close()
 
-	errExit(err, "Error while reading file")
+	printErr(err, "Error while reading file")
 
 	idx, err := search.BuildIndex(field, dataMap)
-	errExit(err, "Error while building index")
+	printErr(err, "Error while building index")
 
 	results = search.SearchData(pattern, idx)
 
@@ -97,10 +97,10 @@ func getRelatedElements(searchGroup string, mapToSearch []map[string]interface{}
 
 func drawTable(results []map[string]interface{}) {
 	err := table.DrawTable(results)
-	errExit(err, "Failed to draw a table")
+	printErr(err, "Failed to draw a table")
 }
 
-func errExit(err error, message string) {
+func printErr(err error, message string) {
 	if err != nil {
 		fmt.Printf("%s - %s\n", message, err)
 	}
