@@ -119,12 +119,13 @@ E.g. using sqlx with sqlite/mysql and etc.
 # Test coverage
 
 ```
-ok      github.com/logingood/gooz       0.023s  coverage: 0.0% of statements
-ok      github.com/logingood/gooz/cmd   0.024s  coverage: 19.8% of statements
-ok      github.com/logingood/gooz/internal/backend      0.023s  coverage: 0.0% of statements
-ok      github.com/logingood/gooz/internal/backend/zfile        0.028s  coverage: 94.7% of statements
-ok      github.com/logingood/gooz/internal/index        0.023s  coverage: 100.0% of statements
-ok      github.com/logingood/gooz/internal/search       0.015s  coverage: 87.0% of statements
+ok      github.com/logingood/gooz       0.043s  coverage: 0.0% of statements
+ok      github.com/logingood/gooz/cmd   0.016s  coverage: 18.1% of statements
+ok      github.com/logingood/gooz/internal/backend      (cached)        coverage: 0.0% of statements
+ok      github.com/logingood/gooz/internal/backend/zfile        (cached)        coverage: 94.7% of statements
+ok      github.com/logingood/gooz/internal/helpers      0.028s  coverage: 97.3% of statements
+ok      github.com/logingood/gooz/internal/index        (cached)        coverage: 100.0% of statements
+ok      github.com/logingood/gooz/internal/search       0.023s  coverage: 87.0% of statements
 ok      github.com/logingood/gooz/internal/table        0.014s  coverage: 0.0% of statements
 ```
 
