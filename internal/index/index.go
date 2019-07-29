@@ -2,6 +2,7 @@ package index
 
 import (
 	"fmt"
+	"sync"
 )
 
 // Basic hash table implementation to use as an index
@@ -16,6 +17,7 @@ type Value struct {
 
 type HashTable struct {
 	Items map[int]Value
+	Lock  sync.RWMutex
 }
 
 func hash(k Key) (h int) {
@@ -36,13 +38,22 @@ func New() *HashTable {
 }
 
 func (ht *HashTable) Insert(k Key, v interface{}) error {
+	// Lock the mutex, so we can implement thread safety for maps
+
 	if ht.Items == nil {
 		return fmt.Errorf("Hash table is not initialied, call New")
 	}
 
-	// we already have something there, let's create a list :D
-	// last in, first out
-	if len(ht.Search(k)) > 0 {
+	// Check if element is in the hash with locking
+	ht.Lock.RLock()
+	lookup := ht.Items[hash(k)]
+	ht.Lock.RUnlock()
+
+	// Lock mutex for write
+	ht.Lock.Lock()
+	defer ht.Lock.Unlock()
+
+	if lookup.Data != nil {
 		new_elem := Value{
 			Data: v,
 			Next: &Value{
@@ -61,6 +72,9 @@ func (ht *HashTable) Insert(k Key, v interface{}) error {
 }
 
 func (ht *HashTable) Search(k Key) (values []interface{}) {
+	ht.Lock.RLock()
+	defer ht.Lock.RUnlock()
+
 	lookup := ht.Items[hash(k)]
 
 	if lookup.Data != nil {
@@ -75,5 +89,7 @@ func (ht *HashTable) Search(k Key) (values []interface{}) {
 }
 
 func (ht *HashTable) Length() int {
+	ht.Lock.RLock()
+	defer ht.Lock.RUnlock()
 	return len(ht.Items)
 }

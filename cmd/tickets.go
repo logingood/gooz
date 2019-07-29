@@ -25,11 +25,11 @@ var ticketsCmd = &cobra.Command{
 		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		results := searchField(ticketsFilePath, args[0], args[1])
+		results := SearchField(ticketsFilePath, args[0], args[1])
 
 		drawTable(results)
 		if searchRelated {
-			getRelatedElements("tickets", results)
+			GetRelatedElements("tickets", results)
 		}
 	},
 }

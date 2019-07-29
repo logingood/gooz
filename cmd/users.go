@@ -25,11 +25,11 @@ var usersCmd = &cobra.Command{
 		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		results := searchField(usersFilePath, args[0], args[1])
+		results := SearchField(usersFilePath, args[0], args[1])
 
 		drawTable(results)
 		if searchRelated {
-			getRelatedElements("users", results)
+			GetRelatedElements("users", results)
 		}
 	},
 }

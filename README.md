@@ -11,6 +11,10 @@ To build cli we have used [spf13 cobra](https://github.com/spf13/cobra)
 * Search module attempts to detect types and makes everything `string`
 * Table module draw tables and also detects type
 * We validate input against provided schema for safety reasons
+* We use [sync.RWMutex](https://golang.org/pkg/sync/#RWMutex) to ensure thread
+  safety, however this tool is single threaded. No guarantee if it will work
+  correctly for parallel execution because we use [golang
+  maps](https://blog.golang.org/go-maps-in-action). See concurrency section.
 
 # Challenge check list
 

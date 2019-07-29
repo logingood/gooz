@@ -10,7 +10,7 @@ import (
 	"github.com/spf13/afero"
 )
 
-func searchField(filePath string, field string, pattern string) (results []map[string]interface{}) {
+func SearchField(filePath string, field string, pattern string) (results []map[string]interface{}) {
 	var appFs = afero.NewOsFs()
 	data := zfile.New(appFs, filePath)
 
@@ -35,17 +35,17 @@ func searchField(filePath string, field string, pattern string) (results []map[s
 	return results
 }
 
-func getRelatedElements(searchGroup string, mapToSearch []map[string]interface{}) {
+func GetRelatedElements(searchGroup string, mapToSearch []map[string]interface{}) {
 	for _, element := range mapToSearch {
 		switch searchGroup {
 		case "organizations":
 			if element["_id"] != nil {
 				elementStr, err := helpers.DetectTypeAndStringfy(element["_id"])
 				if err == nil {
-					users := searchField(usersFilePath, "organization_id", elementStr)
+					users := SearchField(usersFilePath, "organization_id", elementStr)
 					drawTable(users)
 
-					tickets := searchField(ticketsFilePath, "organization_id", elementStr)
+					tickets := SearchField(ticketsFilePath, "organization_id", elementStr)
 					drawTable(tickets)
 				}
 			}
@@ -53,7 +53,7 @@ func getRelatedElements(searchGroup string, mapToSearch []map[string]interface{}
 			if element["organization_id"] != nil {
 				elementStr, err := helpers.DetectTypeAndStringfy(element["organization_id"])
 				if err == nil {
-					orgs := searchField(organizationsFilePath, "_id", elementStr)
+					orgs := SearchField(organizationsFilePath, "_id", elementStr)
 					drawTable(orgs)
 				}
 			}
@@ -61,9 +61,9 @@ func getRelatedElements(searchGroup string, mapToSearch []map[string]interface{}
 			if element["_id"] != nil {
 				elementStr, err := helpers.DetectTypeAndStringfy(element["_id"])
 				if err == nil {
-					tickets := searchField(ticketsFilePath, "assignee_id", elementStr)
+					tickets := SearchField(ticketsFilePath, "assignee_id", elementStr)
 					drawTable(tickets)
-					tickets = searchField(ticketsFilePath, "submitter_id", elementStr)
+					tickets = SearchField(ticketsFilePath, "submitter_id", elementStr)
 					drawTable(tickets)
 				}
 			}
@@ -71,7 +71,7 @@ func getRelatedElements(searchGroup string, mapToSearch []map[string]interface{}
 			if element["organization_id"] != nil {
 				elementStr, err := helpers.DetectTypeAndStringfy(element["organization_id"])
 				if err == nil {
-					orgs := searchField(organizationsFilePath, "_id", elementStr)
+					orgs := SearchField(organizationsFilePath, "_id", elementStr)
 					drawTable(orgs)
 				}
 			}
@@ -79,7 +79,7 @@ func getRelatedElements(searchGroup string, mapToSearch []map[string]interface{}
 			if element["assignee_id"] != nil {
 				elementStr, err := helpers.DetectTypeAndStringfy(element["assignee_id"])
 				if err == nil {
-					users := searchField(usersFilePath, "_id", elementStr)
+					users := SearchField(usersFilePath, "_id", elementStr)
 					drawTable(users)
 				}
 			}
@@ -87,7 +87,7 @@ func getRelatedElements(searchGroup string, mapToSearch []map[string]interface{}
 			if element["submitter_id"] != nil {
 				elementStr, err := helpers.DetectTypeAndStringfy(element["submitter_id"])
 				if err == nil {
-					users := searchField(usersFilePath, "_id", elementStr)
+					users := SearchField(usersFilePath, "_id", elementStr)
 					drawTable(users)
 				}
 			}

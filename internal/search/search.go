@@ -8,6 +8,7 @@ import (
 )
 
 func BuildIndex(key string, data []map[string]interface{}) (idx *index.HashTable, err error) {
+	// Lock mutex to ensure thread safety
 	idx = index.New()
 
 	for _, element := range data {
@@ -38,6 +39,7 @@ func BuildIndex(key string, data []map[string]interface{}) (idx *index.HashTable
 }
 
 func SearchData(key string, h *index.HashTable) (results []map[string]interface{}) {
+	// Lock mutex to ensure thread safety
 	values := h.Search(key)
 	results = make([]map[string]interface{}, 0)
 
