@@ -128,6 +128,7 @@ var _ = Describe("Helpers", func() {
 				Expect(header).To(Equal([]string{"k1", "k2", "k3"}))
 				Expect(rows[0]).To(Equal([]string{"v11", "v12", "v13"}))
 			})
+
 			It("should handle empty map", func() {
 				inputData := make([]map[string]interface{}, 4)
 
