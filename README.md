@@ -7,11 +7,12 @@ Go version of Zendesk Coding Challenge, code name GOOZ.
 To build cli we have used [spf13 cobra](https://github.com/spf13/cobra)
 
 * Search is organized using basic hash table on maps
-* Results are printed as tables, for short version use `--relaed=fasle` flag. Otherwise for all related items tables will be printed as well.
-* Hash table takes interface{} as input
-* Search module attempts to detect types and makes everything `string`
-* Table module draw tables and also detects type
-* We validate input against provided schema for safety reasons
+* Results are printed as tables, for short version use `--related=fasle` flag.
+  Tables for all related objects will be printed otherwise.
+* Hash table takes interface{} as input.
+* Search module attempts to detect types and makes everything `string`.
+* Table module draws tables and also detects type.
+* We validate input against provided schema for safety reasons.
 * We use [sync.RWMutex](https://golang.org/pkg/sync/#RWMutex) to ensure thread
   safety, however this tool is single threaded. No guarantee if it works
   correctly for parallel execution because we use [golang
@@ -26,11 +27,16 @@ To build cli we have used [spf13 cobra](https://github.com/spf13/cobra)
 
 # Challenge check list
 
-- [x] Separation of concerns: every module is implemented as independent package (e.g. `index`, `search`, `table`, `cli`, `backend` and etc)
-- [x] Simplicity: we used the most basic type of data structure - hash table and list to organize search index
-- [x] Test coverage: every module is tested separately, a test coverage report is provided. We haven't tested cobra cli because it comes from the library.
-- [x] Performance analysis is provided. For large subsets 13.79 lookups/ms performance should be expected.
-- [x] Errors are handled and logged, corresponding tests provided
+- [x] Separation of concerns: every module is implemented as an independent
+  package (e.g. `index`, `search`, `table`, `cli`, `backend` and etc)
+- [x] Simplicity: we used the most basic type of data structure: a hash table
+  and a list to organize a search index
+- [x] Test coverage: every module is tested separately, a test coverage report
+  is provided. We haven't tested cobra cli because it comes from the library
+  and all business logic is tested separately in the corresponding modules.
+- [x] Performance analysis is provided. For large subsets 13.79 lookups/ms
+  performance should be expected.
+- [x] Errors are handled and logged, corresponding tests are provided.
 
 # Install and build
 
@@ -40,7 +46,8 @@ You can use `go get` command:
 go get -u github.com/logingood/gooz
 ```
 
-Alternatively use [Docker](https://github.com/logingood/gooz#dockerfile) or build yourself:
+Alternatively use [Docker](https://github.com/logingood/gooz#dockerfile) or
+build it yourself:
 ```
 git clone https://github.com/logingood/gooz
 cd gooz
@@ -49,8 +56,9 @@ go run . --help
 
 # CLI and Configuration
 
-By default `gooz` will look for tables in `./data/tickets.json`, `./data/users.json` and `./data/organizations.json`.
-To alter this you can use `--organizations_path`, `--tickets_path` and `--users_path` flags and supply to cli.
+By default `gooz` will look for the tables in `./data/tickets.json`,
+`./data/users.json` and `./data/organizations.json`.  To change table's path
+you can use `--organizations_path`, `--tickets_path` and `--users_path` flags.
 
 Search tickets by any field, e.g. subject
 
@@ -123,10 +131,16 @@ docker rm -f gooz >/dev/null 2>&1;  docker run -ti --name gooz gooz:latest /bin/
 
 # Pluggable backend
 
-Backend implements interface `Store`, you need to implement three methods in order to use interface.
-At the moment only Filesystem with json files is implemented as per the task, however you can replace it
-with other backends that implements similar interface without requirement to rewrite whole code.
-E.g. using sqlx with sqlite/mysql and etc.
+Backend implements an interface `Store`, you need to implement three methods in
+order to use interface.
+
+* `Open() error`
+* `Read() (map[string]interface{}, error)`
+* `Close() error`
+
+A module that is called `zfile` implements this interface to read supplied
+`josn` file from the file system and marshal it into `[]map[string]interface{}`.
+However we can extend this tool to use `sqlite`, `mysql`, `redis` and etc.
 
 # Test coverage
 
@@ -143,7 +157,7 @@ ok      github.com/logingood/gooz/internal/table        (cached)        coverage
 
 # Performance
 
-You can use generator flag to generate perfdata, e.g.
+You can use the generator flag to generate perfdata, e.g.
 ```
 gooz generate --size 100
 ```
