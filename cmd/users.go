@@ -12,7 +12,10 @@ import (
 var usersCmd = &cobra.Command{
 	Use:   "users",
 	Short: "search users table",
-	Long:  `blah`,
+	Long: `search users and related object by the following list: _id, url,
+	external_id, name, alias, created_at, active, verified, shared, locale,
+	timezone, email, last_login_at, phone, signature, organization_id, tags,
+	suspended, role`,
 	Args: func(cmd *cobra.Command, args []string) error {
 		if len(args) < 2 {
 			return errors.New("Please specify query field and search string")

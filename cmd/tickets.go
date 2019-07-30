@@ -12,7 +12,7 @@ import (
 var ticketsCmd = &cobra.Command{
 	Use:   "tickets",
 	Short: "Tickets search",
-	Long:  `Long desc goes here`,
+	Long:  `Search tickets and related objects by _id, url, external_id, created_at, type, subject, description, priority, status, submitter, assginee_id, organization_id, tags, has_incidents, due_at and via (channel)`,
 	Args: func(cmd *cobra.Command, args []string) error {
 		if len(args) < 2 {
 			return errors.New("Please specify query field and search string")

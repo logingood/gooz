@@ -12,7 +12,8 @@ import (
 var organizationsCmd = &cobra.Command{
 	Use:   "organizations",
 	Short: "Search organizations table",
-	Long:  `Search by any field from given _id, url, external_id, name, domain_names, created_at, details, shared_tickets, tags`,
+	Long: `Search by any field from given _id, url, external_id, name,
+	domain_names, created_at, details, shared_tickets, tags`,
 	Args: func(cmd *cobra.Command, args []string) error {
 		if len(args) < 2 {
 			return errors.New("Please specify query field and search string")
