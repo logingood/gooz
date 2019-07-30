@@ -1,8 +1,7 @@
 package search
 
 import (
-	"strconv"
-
+	"github.com/logingood/gooz/internal/helpers"
 	"github.com/logingood/gooz/internal/index"
 	log "github.com/sirupsen/logrus"
 )
@@ -23,12 +22,14 @@ func BuildIndex(key string, data []map[string]interface{}) (idx *index.HashTable
 			for _, v := range interfaceSlice {
 				idx.Insert(v.(string), element)
 			}
-		case float64:
-			err = idx.Insert(strconv.FormatFloat(element[key].(float64), 'f', 0, 64), element)
-		case bool:
-			err = idx.Insert(strconv.FormatBool(element[key].(bool)), element)
 		default:
-			err = idx.Insert(element[key], element)
+			strElemWord, err := helpers.DetectTypeAndStringfy(element[key])
+			// Logging this error for information, we still attempt to put this thing in the hash as a key.
+			// Hash takes interface{}, so it doesn't really care.
+			if err != nil {
+				log.Errorf("Error has while converting types, only int, int64, float64, bool, string and []interface{} are supported %s", err)
+			}
+			err = idx.Insert(strElemWord, element)
 			if err != nil {
 				log.Errorf("Error has occured when indexing data %s", err)
 			}

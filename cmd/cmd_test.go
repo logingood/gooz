@@ -2,7 +2,6 @@ package cmd_test
 
 import (
 	"encoding/json"
-	"fmt"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -62,7 +61,6 @@ var TestUsers = []byte(`[
   },
 	{
 		"_id": 4,
-		"url": "http://test.zendesk.com/api/v2/users/75.json",
 		"external_id": "0db0c1ff-8901-4dc3-a469-fe4b500d0fca",
 		"name": "Jean Luc Picard",
 		"verified": true,
@@ -120,7 +118,6 @@ var TestOrgs = []byte(`[
 				"betterwebsite.com"
 			],
 			"created_at": "2016-02-21T06:11:51 -11:00",
-			"details": "MegaGOOS",
 			"shared_tickets": false,
 			"tags": [
 				"Silver",
@@ -236,47 +233,140 @@ var _ = Describe("Cmd", func() {
 		Context("Test search", func() {
 			data := []map[string]interface{}{}
 
-			_ = json.Unmarshal(TestOrgs, &data)
-			for _, element := range data {
-				for k, v := range element {
-					Context(fmt.Sprintf("Test org %s", k), func() {
-						It(fmt.Sprintf("should search organizations %s", k), func() {
-							str, err := helpers.DetectTypeAndStringfy(v)
-							results := SearchField(organizationsFilePath, k, str)
-							Expect(len(results)).ToNot(BeNil())
-							Expect(err).ToNot(HaveOccurred())
-						})
-					})
-				}
-			}
+			Context("Test search of organizations", func() {
+				It("Should search organization by name", func() {
+					_ = json.Unmarshal(TestOrgs, &data)
+					strData, err := helpers.DetectTypeAndStringfy(data[0]["name"])
 
-			_ = json.Unmarshal(TestUsers, &data)
-			for _, element := range data {
-				for k, v := range element {
-					Context(fmt.Sprintf("Test user %s", k), func() {
-						It(fmt.Sprintf("should search users %s", k), func() {
-							str, err := helpers.DetectTypeAndStringfy(v)
-							results := SearchField(usersFilePath, k, str)
-							Expect(len(results)).ToNot(BeNil())
-							Expect(err).ToNot(HaveOccurred())
-						})
-					})
-				}
-			}
+					results := SearchField(organizationsFilePath, "name", strData)
+					Expect(len(results)).To(Equal(1))
+					Expect(err).ToNot(HaveOccurred())
+				})
 
-			_ = json.Unmarshal(TestTickets, &data)
-			for _, element := range data {
-				for k, v := range element {
-					Context(fmt.Sprintf("Test tickets %s", k), func() {
-						It(fmt.Sprintf("should search tickets %s", k), func() {
-							str, err := helpers.DetectTypeAndStringfy(v)
-							results := SearchField(ticketsFilePath, k, str)
-							Expect(len(results)).ToNot(BeNil())
-							Expect(err).ToNot(HaveOccurred())
-						})
-					})
-				}
-			}
+				It("Should search organization by url", func() {
+					_ = json.Unmarshal(TestOrgs, &data)
+					strData, err := helpers.DetectTypeAndStringfy(data[0]["url"])
+
+					results := SearchField(organizationsFilePath, "url", strData)
+					Expect(len(results)).To(Equal(2))
+					Expect(err).ToNot(HaveOccurred())
+				})
+
+				It("Should search organization by external_id", func() {
+					_ = json.Unmarshal(TestOrgs, &data)
+					strData, err := helpers.DetectTypeAndStringfy(data[0]["external_id"])
+
+					results := SearchField(organizationsFilePath, "external_id", strData)
+					Expect(len(results)).To(Equal(2))
+					Expect(err).ToNot(HaveOccurred())
+				})
+
+				It("Should search organization by bool", func() {
+					_ = json.Unmarshal(TestOrgs, &data)
+					strData, err := helpers.DetectTypeAndStringfy(data[0]["shared_tickets"])
+
+					results := SearchField(organizationsFilePath, "shared_tickets", strData)
+					Expect(len(results)).To(Equal(2))
+					Expect(err).ToNot(HaveOccurred())
+				})
+
+				It("Should search organization by id", func() {
+					_ = json.Unmarshal(TestOrgs, &data)
+					strData, err := helpers.DetectTypeAndStringfy(data[0]["_id"])
+
+					results := SearchField(organizationsFilePath, "_id", strData)
+					Expect(len(results)).To(Equal(1))
+					Expect(err).ToNot(HaveOccurred())
+				})
+
+				It("Should search organization by empty field", func() {
+					results := SearchField(organizationsFilePath, "details", "")
+					Expect(len(results)).To(Equal(1))
+				})
+
+				It("Should search organization by domain names []string", func() {
+					results := SearchField(organizationsFilePath, "domain_names", "web.site")
+					Expect(len(results)).To(Equal(2))
+				})
+			})
+
+			Context("Test search of users", func() {
+				It("Should search users by name", func() {
+					_ = json.Unmarshal(TestUsers, &data)
+					strData, err := helpers.DetectTypeAndStringfy(data[0]["name"])
+
+					results := SearchField(usersFilePath, "name", strData)
+					Expect(len(results)).To(Equal(1))
+					Expect(err).ToNot(HaveOccurred())
+				})
+
+				It("Should search users by bool", func() {
+					_ = json.Unmarshal(TestUsers, &data)
+					strData, err := helpers.DetectTypeAndStringfy(data[0]["active"])
+
+					results := SearchField(usersFilePath, "active", strData)
+					Expect(len(results)).To(Equal(2))
+					Expect(err).ToNot(HaveOccurred())
+				})
+
+				It("Should search users by id", func() {
+					_ = json.Unmarshal(TestUsers, &data)
+					strData, err := helpers.DetectTypeAndStringfy(data[0]["_id"])
+
+					results := SearchField(usersFilePath, "_id", strData)
+					Expect(len(results)).To(Equal(1))
+					Expect(err).ToNot(HaveOccurred())
+				})
+
+				It("Should search users by empty field", func() {
+					results := SearchField(usersFilePath, "url", "")
+					Expect(len(results)).To(Equal(1))
+				})
+
+				It("Should search users by []string (tags) field", func() {
+					results := SearchField(usersFilePath, "tags", "anothertag")
+					Expect(len(results)).To(Equal(4))
+				})
+			})
+
+			Context("Test search of tickets", func() {
+				It("Should search users by subject", func() {
+					_ = json.Unmarshal(TestTickets, &data)
+					strData, err := helpers.DetectTypeAndStringfy(data[0]["subject"])
+
+					results := SearchField(ticketsFilePath, "subject", strData)
+					Expect(len(results)).To(Equal(1))
+					Expect(err).ToNot(HaveOccurred())
+				})
+
+				It("Should search tickets by bool", func() {
+					_ = json.Unmarshal(TestTickets, &data)
+					strData, err := helpers.DetectTypeAndStringfy(data[0]["has_incidents"])
+
+					results := SearchField(ticketsFilePath, "has_incidents", strData)
+					Expect(len(results)).To(Equal(3))
+					Expect(err).ToNot(HaveOccurred())
+				})
+
+				It("Should search ticket by org_id", func() {
+					_ = json.Unmarshal(TestTickets, &data)
+					strData, err := helpers.DetectTypeAndStringfy(data[0]["organization_id"])
+
+					results := SearchField(ticketsFilePath, "organization_id", strData)
+					Expect(len(results)).To(Equal(2))
+					Expect(err).ToNot(HaveOccurred())
+				})
+
+				It("Should search users by empty field", func() {
+					results := SearchField(ticketsFilePath, "assignee_id", "")
+					Expect(len(results)).To(Equal(1))
+				})
+
+				It("Should search users by []string (tags) field", func() {
+					results := SearchField(ticketsFilePath, "tags", "Georgia")
+					Expect(len(results)).To(Equal(2))
+				})
+			})
 		})
 	})
 })
