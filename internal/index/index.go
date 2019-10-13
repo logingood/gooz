@@ -45,9 +45,7 @@ func (ht *HashTable) Insert(k Key, v interface{}) error {
 	}
 
 	// Check if element is in the hash with locking
-	ht.Lock.RLock()
 	lookup := ht.Items[hash(k)]
-	ht.Lock.RUnlock()
 
 	// Lock mutex for write
 	ht.Lock.Lock()
@@ -72,9 +70,6 @@ func (ht *HashTable) Insert(k Key, v interface{}) error {
 }
 
 func (ht *HashTable) Search(k Key) (values []interface{}) {
-	ht.Lock.RLock()
-	defer ht.Lock.RUnlock()
-
 	lookup := ht.Items[hash(k)]
 
 	if lookup.Data != nil {
@@ -89,7 +84,5 @@ func (ht *HashTable) Search(k Key) (values []interface{}) {
 }
 
 func (ht *HashTable) Length() int {
-	ht.Lock.RLock()
-	defer ht.Lock.RUnlock()
 	return len(ht.Items)
 }
