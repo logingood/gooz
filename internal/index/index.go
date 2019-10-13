@@ -54,18 +54,18 @@ func (ht *HashTable) Insert(k Key, v interface{}) error {
 	defer ht.Lock.Unlock()
 
 	if lookup.Data != nil {
-		new_elem := Value{
+		new_elem := &Value{
 			Data: v,
 			Next: &Value{
 				Data: ht.Items[hash(k)].Data,
 				Next: ht.Items[hash(k)].Next,
 			},
 		}
-		ht.Items[hash(k)] = new_elem
+		ht.Items[hash(k)] = *new_elem
 	} else {
-		ht.Items[hash(k)] = Value{
-			Data: v,
-		}
+		new_elem := &Value{}
+		new_elem.Data = v
+		ht.Items[hash(k)] = *new_elem
 	}
 
 	return nil
