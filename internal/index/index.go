@@ -44,14 +44,11 @@ func (ht *HashTable) Insert(k Key, v interface{}) error {
 		return fmt.Errorf("Hash table is not initialied, call New")
 	}
 
-	// Check if element is in the hash with locking
-	lookup := ht.Items[hash(k)]
-
 	// Lock mutex for write
 	ht.Lock.Lock()
 	defer ht.Lock.Unlock()
 
-	if lookup.Data != nil {
+	if ht.Items[hash(k)].Data != nil {
 		new_elem := &Value{
 			Data: v,
 			Next: &Value{
