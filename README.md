@@ -188,7 +188,7 @@ time go run . users role agent --related=false --organizations_path perfdata/org
 go run . users role agent --related=false --organizations_path  --tickets_pat  1.13s user 0.49s system 153% cpu 1.055 total
 ```
 
-That is interesting that we can lookup faster if saerch 100K records files because we are building Indexes for invokation of the CLI. Hence for bigger amount of records we see better performance as it takes some time to build
+That is interesting that we can lookup faster if search 100K records files because we are building Indexes for invokation of the CLI. Hence for bigger amount of records we see better performance as it takes some time to build
 the hash table.
 
 Adding concurrency and statically typing everything can give extra perormance, however here we have used `map[string]interface{}`.
